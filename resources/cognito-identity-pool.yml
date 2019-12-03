@@ -105,7 +105,7 @@ Resources:
                       - ':'
                       - Ref: AWS::AccountId
                       - ':'
-                      - !ImportValue ApiGatewayRestApi
+                      - !ImportValue ${self:custom.stage}-RecipesApiGateway
                       - '/*/GET/*'
               
               - Effect: 'Allow'
@@ -115,7 +115,7 @@ Resources:
                   - Fn::Join:
                     - ''
                     -
-                      - !ImportValue PicturesBucketArn
+                      - !ImportValue ${self:custom.stage}-RecipePicturesBucketArn
                       - '/private/'
                       - '$'
                       - '{cognito-identity.amazonaws.com:sub}/*'
@@ -161,7 +161,7 @@ Resources:
                       - ':'
                       - Ref: AWS::AccountId
                       - ':'
-                      - !ImportValue ApiGatewayRestApi
+                      - !ImportValue ${self:custom.stage}-RecipesApiGateway
                       - '/*/*/*'
               
               - Effect: 'Allow'
@@ -171,7 +171,7 @@ Resources:
                   - Fn::Join:
                     - ''
                     -
-                      - !ImportValue PicturesBucketArn
+                      - !ImportValue ${self:custom.stage}-RecipePicturesBucketArn
                       - '/private/'
                       - '$'
                       - '{cognito-identity.amazonaws.com:sub}/*'
