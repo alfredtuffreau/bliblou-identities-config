@@ -1,0 +1,29 @@
+service: bliblou-identities-config
+
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-cf-vars
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: eu-west-1
+
+custom:
+  product: bliblou
+  stage: ${opt:stage, self:provider.stage}
+
+functions:
+  mapRole:
+    handler: handler.mapRole
+
+resources:
+  - ${file(resources/cognito-user-pool.yml)}
+  - ${file(resources/cognito-identity-pool.yml)}
+

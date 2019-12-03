@@ -1,0 +1,181 @@
+Resources:
+  CognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: ${self:custom.product}-${self:custom.stage}-IdentityPool
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId: !Ref CognitoUserPoolClient
+          ProviderName: !GetAtt CognitoUserPool.ProviderName
+
+  IdentityPoolRoleAttachmentMapping:
+    Type: Custom::DynamicMapTransform
+    Properties:
+      ServiceToken: !GetAtt MapRoleLambdaFunction.Arn
+      AttributeName: RoleMappings
+      Entries:
+        - Key: !Sub "#{CognitoUserPool.ProviderName}:#{CognitoUserPoolClient}"
+          Value:
+            AmbiguousRoleResolution: AuthenticatedRole
+            Type: Rules
+            RulesConfiguration:
+              Rules:
+                - Claim: cognito:groups
+                  MatchType: Contains
+                  Value: editors
+                  RoleARN: !GetAtt CognitoEditorsAuthRole.Arn
+
+  CognitoIdentityPoolRoles:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref CognitoIdentityPool
+      Roles:
+        authenticated: !GetAtt CognitoAuthRole.Arn
+        unauthenticated: !GetAtt CognitoUnauthRole.Arn
+      RoleMappings: 
+        !GetAtt IdentityPoolRoleAttachmentMapping.RoleMappings
+
+  CognitoUnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Federated: 'cognito-identity.amazonaws.com'
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref CognitoIdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': unauthenticated
+      Policies:
+        - PolicyName: 'CognitoAuthorizedPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'mobileanalytics:PutEvents'
+                  - 'cognito-sync:*'
+                  - 'cognito-identity:*'
+                Resource: '*'
+          
+  CognitoAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Federated: 'cognito-identity.amazonaws.com'
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref CognitoIdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': authenticated
+      Policies:
+        - PolicyName: 'CognitoAuthorizedPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'mobileanalytics:PutEvents'
+                  - 'cognito-sync:*'
+                  - 'cognito-identity:*'
+                Resource: '*'
+              
+              - Effect: 'Allow'
+                Action:
+                  - 'execute-api:Invoke'
+                Resource:
+                  Fn::Join:
+                    - ''
+                    -
+                      - 'arn:aws:execute-api:'
+                      - Ref: AWS::Region
+                      - ':'
+                      - Ref: AWS::AccountId
+                      - ':'
+                      - !ImportValue ApiGatewayRestApi
+                      - '/*/GET/*'
+              
+              - Effect: 'Allow'
+                Action:
+                  - 's3:*'
+                Resource:
+                  - Fn::Join:
+                    - ''
+                    -
+                      - !ImportValue PicturesBucketArn
+                      - '/private/'
+                      - '$'
+                      - '{cognito-identity.amazonaws.com:sub}/*'
+                      
+  CognitoEditorsAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Federated: 'cognito-identity.amazonaws.com'
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref CognitoIdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': authenticated
+      Policies:
+        - PolicyName: 'CognitoAuthorizedPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'mobileanalytics:PutEvents'
+                  - 'cognito-sync:*'
+                  - 'cognito-identity:*'
+                Resource: '*'
+              
+              - Effect: 'Allow'
+                Action:
+                  - 'execute-api:Invoke'
+                Resource:
+                  Fn::Join:
+                    - ''
+                    -
+                      - 'arn:aws:execute-api:'
+                      - Ref: AWS::Region
+                      - ':'
+                      - Ref: AWS::AccountId
+                      - ':'
+                      - !ImportValue ApiGatewayRestApi
+                      - '/*/*/*'
+              
+              - Effect: 'Allow'
+                Action:
+                  - 's3:*'
+                Resource:
+                  - Fn::Join:
+                    - ''
+                    -
+                      - !ImportValue PicturesBucketArn
+                      - '/private/'
+                      - '$'
+                      - '{cognito-identity.amazonaws.com:sub}/*'
+  
+Outputs:
+  IdentityPoolId:
+    Value: !Ref CognitoIdentityPool
