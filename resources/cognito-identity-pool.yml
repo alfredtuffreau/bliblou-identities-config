@@ -172,9 +172,7 @@ Resources:
                     - ''
                     -
                       - !ImportValue ${self:custom.stage}-RecipePicturesBucketArn
-                      - '/private/'
-                      - '$'
-                      - '{cognito-identity.amazonaws.com:sub}/*'
+                      - '/*'
   
 Outputs:
   IdentityPoolId:
