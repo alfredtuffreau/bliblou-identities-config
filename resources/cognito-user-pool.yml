@@ -30,13 +30,6 @@ Resources:
         - ADMIN_NO_SRP_AUTH
       GenerateSecret: false
   
-  EditorsGroup:
-    Type: AWS::Cognito::UserPoolGroup
-    Properties: 
-      Description: Bliblou recipes editors
-      GroupName: editors
-      UserPoolId: !Ref CognitoUserPool
-  
   ChefsGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties: 
