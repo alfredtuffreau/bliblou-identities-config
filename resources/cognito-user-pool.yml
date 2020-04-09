@@ -37,6 +37,13 @@ Resources:
       GroupName: editors
       UserPoolId: !Ref CognitoUserPool
   
+  ChefsGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties: 
+      Description: Bliblou recipes chefs
+      GroupName: chefs
+      UserPoolId: !Ref CognitoUserPool
+  
   ReviewersGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties: 
