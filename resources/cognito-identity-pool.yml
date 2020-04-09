@@ -24,6 +24,18 @@ Resources:
                   MatchType: Contains
                   Value: editors
                   RoleARN: !GetAtt CognitoEditorsAuthRole.Arn
+                - Claim: cognito:groups
+                  MatchType: Contains
+                  Value: chefs
+                  RoleARN: !GetAtt CognitoEditorsAuthRole.Arn
+                - Claim: cognito:groups
+                  MatchType: Contains
+                  Value: reviewers
+                  RoleARN: !GetAtt CognitoEditorsAuthRole.Arn
+                - Claim: cognito:groups
+                  MatchType: Contains
+                  Value: publishers
+                  RoleARN: !GetAtt CognitoEditorsAuthRole.Arn
 
   CognitoIdentityPoolRoles:
     Type: AWS::Cognito::IdentityPoolRoleAttachment
