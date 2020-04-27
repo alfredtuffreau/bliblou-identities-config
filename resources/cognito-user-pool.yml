@@ -55,5 +55,12 @@ Outputs:
   UserPoolId:
     Value: !Ref CognitoUserPool
 
+  UserPoolProviderName:
+    Value: !GetAtt CognitoUserPool.ProviderName
+    Export:
+      Name: ${self:custom.product}-${self:custom.stage}-UserPoolProviderName
+
   UserPoolClientId:
     Value: !Ref CognitoUserPoolClient
+    Export:
+      Name: ${self:custom.product}-${self:custom.stage}-UserPoolClient
