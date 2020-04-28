@@ -12,7 +12,7 @@ plugins:
 provider:
   name: aws
   runtime: nodejs10.x
-  stage: test
+  stage: dev
   region: eu-west-1
 
 custom:
