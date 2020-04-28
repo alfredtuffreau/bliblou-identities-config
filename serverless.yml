@@ -19,10 +19,6 @@ custom:
   product: bliblou
   stage: ${opt:stage, self:provider.stage}
 
-functions:
-  mapRole:
-    handler: handler.mapRole
-
 resources:
   - ${file(resources/cognito-user-pool.yml)}
   - ${file(resources/cognito-identity-pool.yml)}
