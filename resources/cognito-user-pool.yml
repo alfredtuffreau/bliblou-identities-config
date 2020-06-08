@@ -20,6 +20,14 @@ Resources:
         - Name: gender
           Required: true
           Mutable: true
+      EmailConfiguration:
+        EmailSendingAccount: DEVELOPER
+        From: Le Bliblou <securite@bliblou.com>
+        ReplyToEmailAddress: aide-utilisateur@bliblou.com
+        SourceArn: arn:aws:ses:eu-west-1:685910104720:identity/securite@bliblou.com
+      VerificationMessageTemplate:
+        EmailSubject: Votre code de vérification
+        EmailMessage: <!DOCTYPE html><html><head><title>Code de vérification</title></head><body><p>Bonjour,</p><p>Merci d'avoir rejoint la communauté du Bliblou !<br />Votre code de vérification est {####}.</p><p>Cordialement,<br />Le Bliblou<br /><a href="www.bliblou.com/">www.bliblou.com/</a></p></body></html>
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
