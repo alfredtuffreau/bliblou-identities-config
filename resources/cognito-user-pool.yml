@@ -27,7 +27,7 @@ Resources:
         SourceArn: arn:aws:ses:eu-west-1:685910104720:identity/securite@bliblou.com
       VerificationMessageTemplate:
         EmailSubject: Votre code de vérification
-        EmailMessage: <!DOCTYPE html><html><p>Bonjour,</p><p>Votre code de vérification est {####}.</p><p>Merci de faire partie de la communauté du Bliblou !</p><p>Cordialement,<br />Le Bliblou<br /><a href="www.bliblou.com/">www.bliblou.com/</a></p></html>
+        EmailMessage: <!DOCTYPE html><html><p>Bonjour,</p><p>Votre code de vérification est {####}.</p><p>Merci de faire partie de la communauté du Bliblou !</p><p>Des questions ? Contactez-nous en répondant à ce message ou en nous écrivant à <a href="mailto:aide-utilisateur@bliblou.com">aide-utilisateur@bliblou.com</a></p><p>Cordialement,<br />Le Bliblou<br /><a href="www.bliblou.com/">www.bliblou.com/</a></p></html>
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
